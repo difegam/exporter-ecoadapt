@@ -3,76 +3,35 @@
 version: "3.9"
 
 services:
-  postgres:
-        image: postgres:15.1-alpine
-        restart: unless-stopped
-        container_name: postgres
-        healthcheck:
-          test: ["CMD-SHELL", "pg_isready -U postgres"]
-          interval: 10s
-          timeout: 5s
-          retries: 5
-          start_period: 10s
-        environment:
-          - PUID=${PUID}
-          - PGID=${PGID}
-          - TZ=${TZ}
-          - POSTGRES_PASSWORD=${POSTGRES_DB_PASSWORD}
-          - POSTGRES_USER=${POSTGRES_DB_USER}
-          - POSTGRES_DB=${POSTGRES_DB_DFT}
-          - POSTGRES_DB_APP_USER=${POSTGRES_DB_APP_USER}
-          - POSTGRES_DB_APP_PASS=${POSTGRES_DB_APP_PASS}
-        logging:
-          options:
-            max-size: 10m
-            max-file: "3"
-        ports:
-          - 5432:5432
-        volumes:
-          - postgres_data:/var/lib/postgresql/data/
-          - ./src/api/db/sql/01-init.sh:/docker-entrypoint-initdb.d/01_initdb.sh
+  # exporter-ecoadapt:
+  #   container_name: exporter-ecoadapt
+  #   build: ./src
+  #   restart: unless-stopped
+  #   command: python ./exporter-ecoadapt/exporter-ecoadapt.py
+  #   ports:
+  #     - 502:502
+  #   volumes:
+  #     - ./src/:/usr/src/
 
-  quotes-api:
-    build: ./src
+  sensorfact-server:
+    container_name: sensorfact-server
     restart: unless-stopped
-    container_name: quotes-api
-    # command: uvicorn api.main:app --host 0.0.0.0 --port 8831 --reload
-    command: |
-          bash -c 'while !</dev/tcp/postgres/5432; do sleep 1; done; uvicorn api.main:app --reload --workers 1 --host 0.0.0.0 --port 8831'
+    build: ./dev
     ports:
-      - 8831:8831
-    volumes:
-      - ./src/:/usr/src/app/
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-      - DB_CONNECTION_STRING=${POSTGRES_DB_CONNECTION}
-      - API_VERSION=${API_VERSION}
-      - API_VERSION_NUMBER=${API_VERSION_NUMBER}
-    depends_on:
-      - postgres
+      - 9000:9000
+    command: python ./server.py --port 9000
 
-  web:
-    container_name: web-app
-    restart: unless-stopped
-    build: ./src/web
+  modbus-server:
+    container_name: modbus-server
+    image: oitc/modbus-server
+    restart: always
+    command: -f /server_config.json
     ports:
-      - 1031:1031
+      - 5020:5020
     volumes:
-      - ./src/web/:/usr/src/app/
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - TZ=${TZ}
-      - UNSPLASH_ACCESS_KEY=${UNSPLASH_ACCESS_KEY}
-      - UNSPLASH_DFT_IMAGE=${UNSPLASH_DFT_IMAGE}
-
-
-volumes:
-  postgres_data:
+      - ./server.json:/server_config.json:ro
 
 networks:
   default:
-    name: quotes-net
+    name: sensorfact
     # external: true

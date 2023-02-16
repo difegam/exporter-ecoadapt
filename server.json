@@ -1,0 +1,81 @@
+{
+  "server": {
+    "listenerAddress": "0.0.0.0",
+    "listenerPort": 5020,
+    "tlsParams": {
+      "description": "path to certificate and private key to enable tls",
+      "privateKey": null,
+      "certificate": null
+    },
+    "logging": {
+      "format": "%(asctime)-15s %(threadName)-15s  %(levelname)-8s %(module)-15s:%(lineno)-8s %(message)s",
+      "logLevel": "DEBUG"
+    }
+  },
+  "registers": {
+    "description": "initial values for the register types",
+    "zeroMode": false,
+    "initializeUndefinedRegisters": false,
+    "discreteInput": {},
+    "coils": {},
+    "holdingRegister": {
+      "123": "0xAABB",
+      "246": "0x0101"
+    },
+    "inputRegister": {
+      "0": "0x202",
+      "1": "0x2",
+      "2": "0x1e",
+      "3": "0xacfd",
+      "4": "0x44e7",
+      "244": "0x0",
+      "245": "0x0",
+      "246": "0x0",
+      "247": "0x0",
+      "248": "0x0",
+      "249": "0x0",
+      "250": "0x0",
+      "251": "0x0",
+      "252": "0x0",
+      "253": "0x0",
+      "254": "0x0",
+      "255": "0x0",
+      "352": "0xc22d",
+      "353": "0x436e",
+      "354": "0x5197",
+      "355": "0x3e21",
+      "356": "0xb079",
+      "357": "0x3d84",
+      "358": "0x0",
+      "359": "0x0",
+      "360": "0x0",
+      "361": "0x0",
+      "362": "0x0",
+      "363": "0x0",
+      "388": "0x84ee",
+      "389": "0x436e",
+      "390": "0x3458",
+      "391": "0x3e23",
+      "392": "0x58b3",
+      "393": "0x3d84",
+      "394": "0x0",
+      "395": "0x0",
+      "396": "0x0",
+      "397": "0x0",
+      "398": "0x0",
+      "399": "0x0",
+      "424": "0xd443",
+      "425": "0x424d",
+      "426": "0xd443",
+      "427": "0x424d",
+      "428": "0xa82b",
+      "429": "0x4235",
+      "430": "0x0",
+      "431": "0x0",
+      "432": "0x0",
+      "433": "0x0",
+      "434": "0x0",
+      "435": "0x0"
+    }
+  }
+}

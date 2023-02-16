@@ -12,10 +12,12 @@ ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
 # copy requirements file
-COPY ./requirements.txt /usr/src/requirements.txt
+COPY ./requirements-dev.txt /usr/src/requirements.txt
 
 # install dependencies
-RUN pip3 install -r /usr/src/requirements.txt
+RUN set -eux \
+    && pip3 install --no-cache-dir --upgrade -r /usr/src/requirements.txt \
+    && rm -rf /root/.cache/pip
 
 # copy project
 COPY . /usr/src

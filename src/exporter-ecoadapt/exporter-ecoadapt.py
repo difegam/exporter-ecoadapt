@@ -4,24 +4,24 @@ A minimal EcoAdapt modbus reader
 """
 
 import logging
-from pymodbus.client import ModbusTcpClient as ModbusClient
+
+from pymodbus.client.sync import ModbusTcpClient as ModbusClient
 
 # configure the client logging
-FORMAT = (
-    "%(asctime)-15s %(threadName)-15s "
-    "%(levelname)-8s %(module)-15s:%(lineno)-8s %(message)s"
-)
+FORMAT = ("%(asctime)-15s %(threadName)-15s "
+          "%(levelname)-8s %(module)-15s:%(lineno)-8s %(message)s")
 logging.basicConfig(format=FORMAT)
 log = logging.getLogger()
 log.setLevel(logging.INFO)
 
 UNIT = 0x1
-ADDRESS = "169.254.20.1"
+# ADDRESS = "169.254.20.1"
+ADDRESS = "127.0.0.1"
 
 
 def run_sync_client():
     log.info("Setting up client")
-    client = ModbusClient(ADDRESS, port=502)
+    client = ModbusClient(ADDRESS, port=5020)
     client.connect()
 
     log.info("Reading registers")
@@ -29,14 +29,19 @@ def run_sync_client():
         (0, 1),
         (1, 1),
         (2, 3),
+        (122, 12),
         (244, 12),
         (352, 12),
         (388, 12),
         (424, 12),
     ]
+
     for r in read_registers:
         resp = client.read_input_registers(r[0], r[1], unit=UNIT)
         log.info("%s: %s: %s" % (r, resp, resp.registers))
+
+        # resp = client.read_holding_registers(r[0], r[1], unit=UNIT)
+        # log.info("%s: %s: %s" % (r, resp, resp.registers))
 
     log.info("Closing client")
     client.close()
@@ -44,10 +49,9 @@ def run_sync_client():
 
 if __name__ == "__main__":
     run_sync_client()
-
-""""
+"""
 Output when ran:
->> python3 ./src/exporter-ecoadapt/exporter-ecoadapt.py 
+>> python3 ./src/exporter-ecoadapt/exporter-ecoadapt.py
 2021-03-19 12:31:18,597 MainThread      INFO     exporter-ecoadapt:23       Setting up client
 2021-03-19 12:31:18,610 MainThread      INFO     exporter-ecoadapt:27       Reading registers
 2021-03-19 12:31:18,615 MainThread      INFO     exporter-ecoadapt:39       (0, 1): ReadRegisterResponse (1): [514]
