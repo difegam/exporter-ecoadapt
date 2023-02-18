@@ -3,23 +3,23 @@
 version: "3.9"
 
 services:
-  # exporter-ecoadapt:
-  #   container_name: exporter-ecoadapt
-  #   build: ./src
-  #   restart: unless-stopped
-  #   command: python ./exporter-ecoadapt/exporter-ecoadapt.py
-  #   ports:
-  #     - 502:502
-  #   volumes:
-  #     - ./src/:/usr/src/
-
-  sensorfact-server:
-    container_name: sensorfact-server
+  exporter-ecoadapt:
+    container_name: exporter-ecoadapt
+    build: ./src
     restart: unless-stopped
-    build: ./dev
+    command: python ./exporter-ecoadapt/exporter-ecoadapt.py
     ports:
-      - 9000:9000
-    command: python ./server.py --port 9000
+      - 502:502
+    volumes:
+      - ./src/:/usr/src/
+
+  # sensorfact-server:
+  #   container_name: sensorfact-server
+  #   restart: unless-stopped
+  #   build: ./dev
+  #   ports:
+  #     - 9000:9000
+  #   command: python ./server.py --port 9000
 
   modbus-server:
     container_name: modbus-server

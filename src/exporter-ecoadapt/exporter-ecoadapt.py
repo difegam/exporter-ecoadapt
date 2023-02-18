@@ -4,6 +4,7 @@ A minimal EcoAdapt modbus reader
 """
 
 import logging
+from datetime import datetime
 
 from pymodbus.client.sync import ModbusTcpClient as ModbusClient
 
@@ -19,6 +20,12 @@ UNIT = 0x1
 ADDRESS = "127.0.0.1"
 
 
+# datetime object containing current date and time
+def current_time():
+    now = datetime.now().isoformat()
+    return now
+
+
 def run_sync_client():
     log.info("Setting up client")
     client = ModbusClient(ADDRESS, port=5020)
@@ -29,12 +36,12 @@ def run_sync_client():
         (0, 1),
         (1, 1),
         (2, 3),
-        (122, 12),
         (244, 12),
         (352, 12),
         (388, 12),
         (424, 12),
     ]
+    # read_registers = [(122, 1), (245, 1)]
 
     for r in read_registers:
         resp = client.read_input_registers(r[0], r[1], unit=UNIT)
