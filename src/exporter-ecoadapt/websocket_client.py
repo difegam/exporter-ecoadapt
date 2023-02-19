@@ -1,5 +1,7 @@
 import asyncio
+import json
 
+import exporter_ecoadapt
 from autobahn.asyncio.websocket import (WebSocketClientFactory, WebSocketClientProtocol)
 
 
@@ -8,11 +10,7 @@ class WsClientProtocol(WebSocketClientProtocol):
     def onConnect(self, response):
         print(f"Server connected: {response.peer}")
 
-        headers = {
-            "Server": "MyServer",
-            "Sec-WebSocket-Protocol": "WsClientProtocol, chat, superchat",
-            "Sec-WebSocket-Version": "13"
-        }
+        headers = {"Server": "MyServer", "Sec-WebSocket-Protocol": "WsClientProtocol", "Sec-WebSocket-Version": "13"}
 
         return headers
 
@@ -25,9 +23,9 @@ class WsClientProtocol(WebSocketClientProtocol):
 
         # start sending messages every second ..
         while True:
-            self.sendMessage("Hello, world!".encode('utf8'))
-            self.sendMessage(b"\x00\x01\x03\x04", isBinary=True)
-            await asyncio.sleep(1)
+            data = exporter_ecoadapt.run_sync_client(port=5020)
+            self.sendMessage(json.dumps(data).encode('utf-8'))
+            await asyncio.sleep(2)
 
     def onMessage(self, payload, isBinary):
         if isBinary:
@@ -48,3 +46,6 @@ if __name__ == '__main__':
     loop.run_until_complete(coro)
     loop.run_forever()
     loop.close()
+    # -end    # -end    loop.run_forever()
+    loop.close()
+    # -end    # -end    # -end    # -end

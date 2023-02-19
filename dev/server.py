@@ -41,12 +41,12 @@ class MyServerProtocol(WebSocketServerProtocol):
         print("Client connecting: {0}".format(request.peer))
 
         if "WsClientProtocol" in request.protocols:
-            self.subprotocol = "WsClientProtocol"
-            print("Subprotocol selected: {}".format(self.subprotocol))
-            return ("my-protocol",)
+            self.factory.protocol = 'WsClientProtocol'
+            print("Subprotocol selected: {}".format(self.factory.protocol))
+            return
         else:
-            print("No subprotocol requested")
-            return None
+            # self.sendClose(404, "No matching protocol")
+            return
 
     async def onOpen(self):
         print("WebSocket connection open.")
@@ -83,9 +83,4 @@ if __name__ == "__main__":
         print("Interrupted! Closing server.")
     finally:
         server.close()
-        loop.close()
-        loop.close()
-        loop.close()
-        loop.close()
-        loop.close()
         loop.close()

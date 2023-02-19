@@ -3,6 +3,7 @@
 A minimal EcoAdapt modbus reader
 """
 
+import argparse
 import logging
 from typing import List
 
@@ -16,14 +17,11 @@ logging.basicConfig(format=FORMAT)
 log = logging.getLogger()
 log.setLevel(logging.INFO)
 
-UNIT = 0x1
-ADDRESS = "127.0.0.1"
 
+def run_sync_client(host: str = "127.0.0.1", port: int = 502, unit: int = 0x1):
 
-def run_sync_client():
-    
     # Setting up Modbus Client
-    client = ModbusClient(ADDRESS, port=5020)
+    client = ModbusClient(host, port=port)
     pe6_sensor = PowerElec6()
 
     read_general_information = [
@@ -33,7 +31,7 @@ def run_sync_client():
     ]
 
     for r in read_general_information:
-        client.read_input_registers(r[0], r[1], unit=UNIT)
+        client.read_input_registers(r[0], r[1], unit=unit)
 
     registers_data = {}
 
@@ -64,15 +62,23 @@ def run_sync_client():
     client.connect()
     client.close()
 
+    return registers_data
 
-def get_registers_values(modbus_client: ModbusClient, registers: List[tuple]):
+
+def get_registers_values(modbus_client: ModbusClient, registers: List[tuple], unit: int = 0x1):
     return [
-        modbus_client.read_input_registers(register[0], register[1], unit=UNIT) for register in registers if register
+        modbus_client.read_input_registers(register[0], register[1], unit=unit) for register in registers if register
     ]
 
 
 if __name__ == "__main__":
-    run_sync_client()
+    parser = argparse.ArgumentParser(description="A minimal EcoAdapt modbus reader")
+    parser.add_argument("--host", help="modbus Server", type=str, default='localhost')
+    parser.add_argument("--port", "-p", help="port to serve (default 502)", type=int, default=5020)
+    parser.add_argument("--unit", "-u", help="address device", type=int, default=0x1)
+
+    args = parser.parse_args()
+    run_sync_client(args.host, args.port, args.unit)
 """
 Output when ran:
 >> python3 ./src/exporter-ecoadapt/exporter-ecoadapt.py
