@@ -55,7 +55,8 @@ docker-compose up --build --force-recreate
 docker-compose down
 ```
 
-## Acknowledgements
+## Documentation
+
 ### modbus protocol
 
 - [📄 Modbus interface tutorial](https://www.lammertbies.nl/comm/info/modbus)
@@ -64,15 +65,18 @@ docker-compose down
 - [📺 Using Modbus for IoT Applications](https://www.youtube.com/watch?v=nelI0ErgYuk&list=PL7QFPg5Pk4_UToNB7pyUDfKjn3kGHA1dW)
 
 ### PyModbus
+
 - [📄 readthedocs](https://pymodbus.readthedocs.io/en/latest/index.html)
 
 ### autobahn-python
+
 - [📄 readthedocs](https://autobahn.readthedocs.io/en/latest/contents.html)
 - [💻 github](https://github.com/crossbario/autobahn-python)
 
 ### oitc/modbus-server
+
 - [oitc/modbus-server](https://hub.docker.com/r/oitc/modbus-server)
 
-
 ## Authors
+
 - [@difegam](https://github.com/difegam)
