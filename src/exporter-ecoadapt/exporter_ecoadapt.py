@@ -21,6 +21,7 @@ ADDRESS = "127.0.0.1"
 
 
 def run_sync_client():
+    
     # Setting up Modbus Client
     client = ModbusClient(ADDRESS, port=5020)
     pe6_sensor = PowerElec6()

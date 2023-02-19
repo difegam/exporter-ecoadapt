@@ -121,8 +121,8 @@ class PowerElec6():
             **_get_definition('rms_voltage_1_min_average', PE6_MEASUREMENTS_DEFINITION))
         self.frequency = Measurement(**_get_definition('frequency', PE6_MEASUREMENTS_DEFINITION))
 
-    def get_registers_range(self, measurement):
-        if not measurement in self.__dict__:
+    def get_registers_range(self, measurement: str):
+        if  measurement not in self.__dict__:
             return []
         return [(self.__dict__[measurement]._register_number(connector=1, channel=1), 12)]
 

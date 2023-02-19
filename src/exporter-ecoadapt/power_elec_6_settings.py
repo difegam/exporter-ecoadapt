@@ -1,4 +1,3 @@
-
 PE6_CONFIGURATION = {
     'connectors': 6,
     'channels': 3,
@@ -52,63 +51,63 @@ PE6_MEASUREMENTS_DEFINITION = {
     },
     "reactive_energy_export_index": {
         'name': "Reactive energy export index",
-        "unit": 'kWh',
+        "unit": 'kVArh',
         "wpc": 2,
         "registers_start": 136,
         "registers_end": 171
     },
     "active_power": {
         'name': "Active power",
-        "unit": 'kWh',
+        "unit": 'W',
         "wpc": 2,
         "registers_start": 172,
         "registers_end": 207
     },
     "reactive_power": {
         'name': "Reactive power",
-        "unit": 'kWh',
+        "unit": 'Var',
         "wpc": 2,
         "registers_start": 208,
         "registers_end": 243
     },
     "power_factor": {
         'name': "Power factor",
-        "unit": 'kWh',
+        "unit": '-',
         "wpc": 2,
         "registers_start": 244,
         "registers_end": 279
     },
     "rms_current": {
         'name': "RMS current",
-        "unit": 'kWh',
+        "unit": 'A',
         "wpc": 2,
         "registers_start": 280,
         "registers_end": 315
     },
     "rms_current_1_min_average": {
         'name': "RMS current 1 min average",
-        "unit": 'kWh',
+        "unit": 'A',
         "wpc": 2,
         "registers_start": 316,
         "registers_end": 351
     },
     "rms_voltage": {
         'name': "RMS voltage",
-        "unit": 'kWh',
+        "unit": 'V',
         "wpc": 2,
         "registers_start": 352,
         "registers_end": 387
     },
     "rms_voltage_1_min_average": {
         'name': "RMS voltage 1 min average",
-        "unit": 'kWh',
+        "unit": 'V',
         "wpc": 2,
         "registers_start": 388,
         "registers_end": 423
     },
     "frequency": {
         'name': "Frequency",
-        "unit": 'kWh',
+        "unit": 'Hz',
         "wpc": 2,
         "registers_start": 424,
         "registers_end": 459
