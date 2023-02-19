@@ -4,8 +4,10 @@ A minimal EcoAdapt modbus reader
 """
 
 import logging
+from typing import List
 
 from modbus_client import ModbusClient
+from power_elec_6 import PowerElec6
 
 # configure the client logging
 FORMAT = ("%(asctime)-15s %(threadName)-15s "
@@ -21,22 +23,51 @@ ADDRESS = "127.0.0.1"
 def run_sync_client():
     # Setting up Modbus Client
     client = ModbusClient(ADDRESS, port=5020)
-    client.connect()
+    pe6_sensor = PowerElec6()
 
-    read_registers = [
-        (0, 1),
-        (1, 1),
-        (2, 3),
-        (244, 12),
-        (352, 12),
-        (388, 12),
-        (424, 12),
+    read_general_information = [
+        pe6_sensor.software_version.registers(),
+        pe6_sensor.modbus_table_version.registers(),
+        pe6_sensor.mac_address.registers(),
     ]
 
-    for r in read_registers:
+    for r in read_general_information:
         client.read_input_registers(r[0], r[1], unit=UNIT)
 
+    registers_data = {}
+
+    # Get registers data - frequency
+    read_frequency = pe6_sensor.get_registers_range('frequency')
+    registers_data['frequency'] = {
+        'values': get_registers_values(client, read_frequency),
+        'unit': pe6_sensor.frequency.unit
+    }
+
+    # Get registers data - voltage
+    read_voltage = pe6_sensor.get_registers_range('rms_voltage')
+    registers_data['rms_voltage'] = {
+        'values': get_registers_values(client, read_voltage),
+        'unit': pe6_sensor.rms_voltage.unit
+    }
+
+    # Get registers data - voltage_average
+    read_voltage_average = pe6_sensor.get_registers_range('rms_voltage_1_min_average')
+    registers_data['rms_voltage_1_min_average'] = {
+        'values': get_registers_values(client, read_voltage_average),
+        'unit': pe6_sensor.rms_voltage_1_min_average.unit
+    }
+
+    # Sent data - WS
+    log.info(f"Sending data to server: {registers_data}")
+
+    client.connect()
     client.close()
+
+
+def get_registers_values(modbus_client: ModbusClient, registers: List[tuple]):
+    return [
+        modbus_client.read_input_registers(register[0], register[1], unit=UNIT) for register in registers if register
+    ]
 
 
 if __name__ == "__main__":

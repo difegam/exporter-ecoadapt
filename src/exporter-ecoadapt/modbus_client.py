@@ -64,11 +64,14 @@ class ModbusClient(object):
 
         try:
             response = self.client.read_input_registers(address, count, **kwargs)
-            log.info("%s: %s: %s" % (response, response, response.registers))
+            log.info("%s: %s: %s" % ((address, count), response, response.registers))
             return response.registers
 
         except ModbusException as mb_error:
             log.error(f"Error occurred in {type(mb_error).__name__}: {str(mb_error)}")
+
+        except Exception as e:
+            log.error(f"Error occurred in {type(e).__name__}: {str(e)}")
 
         finally:
             self.client.close()

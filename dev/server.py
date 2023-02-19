@@ -28,18 +28,25 @@
 # A local webserver to receive message sent by exporter. For dev and debugging only!
 #
 
-import asyncio
 import argparse
+import asyncio
 
-from autobahn.asyncio.websocket import WebSocketServerProtocol, WebSocketServerFactory
+from autobahn.asyncio.websocket import (WebSocketServerFactory, WebSocketServerProtocol)
 
 
 class MyServerProtocol(WebSocketServerProtocol):
 
     def onConnect(self, request):
+        print(request)
         print("Client connecting: {0}".format(request.peer))
-        # TODO Return a protocol here that matches the sender
-        return ""
+
+        if "WsClientProtocol" in request.protocols:
+            self.subprotocol = "WsClientProtocol"
+            print("Subprotocol selected: {}".format(self.subprotocol))
+            return ("my-protocol",)
+        else:
+            print("No subprotocol requested")
+            return None
 
     async def onOpen(self):
         print("WebSocket connection open.")
@@ -50,17 +57,15 @@ class MyServerProtocol(WebSocketServerProtocol):
         else:
             print("Text message received: {0}".format(payload.decode("utf8")))
 
+        self.sendMessage(payload, isBinary)
+
     def onClose(self, wasClean, code, reason):
         print("WebSocket connection closed: {0}".format(reason))
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="A local websocket server that receives and prints messages"
-    )
-    parser.add_argument(
-        "--port", "-p", help="Port to serve (default 9000)", type=int, default=9000
-    )
+    parser = argparse.ArgumentParser(description="A local websocket server that receives and prints messages")
+    parser.add_argument("--port", "-p", help="Port to serve (default 9000)", type=int, default=9000)
 
     args = parser.parse_args()
     server_url = f"ws://127.0.0.1:{args.port}"
@@ -78,4 +83,9 @@ if __name__ == "__main__":
         print("Interrupted! Closing server.")
     finally:
         server.close()
+        loop.close()
+        loop.close()
+        loop.close()
+        loop.close()
+        loop.close()
         loop.close()

@@ -1,10 +1,34 @@
+
 PE6_CONFIGURATION = {
     'connectors': 6,
-    'channel': 3,
+    'channels': 3,
 }
 
-PE6_MEASUREMENTS_DEFINITION = {
+# wpb = number of words per bit
+PE6_GENERAL_INFORMATION = {
+    "software_version": {
+        'info': "Software version",
+        "wpb": 1,
+        "registers_start": 0,
+        "registers_end": 0
+    },
+    "modbus_table_version": {
+        'info': "Modbus table version",
+        "wpb": 1,
+        "registers_start": 1,
+        "registers_end": 1
+    },
+    "mac_address": {
+        'info': "MAC address",
+        "wpb": 3,
+        "registers_start": 2,
+        "registers_end": 4
+    }
+}
 
+# wpc = number of words per channel
+
+PE6_MEASUREMENTS_DEFINITION = {
     "active_energy_import_index": {
         'name': "Active energy Import Index",
         "unit": 'kWh',
