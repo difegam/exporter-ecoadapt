@@ -3,24 +3,6 @@
 version: "3.9"
 
 services:
-  exporter-ecoadapt:
-    container_name: exporter-ecoadapt
-    build: ./src
-    restart: unless-stopped
-    command: python ./exporter-ecoadapt/websocket_client.py --mp 5020
-    ports:
-      - 5020:5020
-      - 502:502
-    volumes:
-      - ./src/:/usr/src/
-
-  sensorfact-server:
-    container_name: sensorfact-server
-    restart: unless-stopped
-    build: ./dev
-    ports:
-      - 9000:9000
-    command: python ./server.py --port 9000
 
   modbus-server:
     container_name: modbus-server
@@ -31,7 +13,40 @@ services:
       - 5020:5020
     volumes:
       - ./server.json:/server_config.json:ro
+    networks:
+      sensorfact:
+        ipv4_address: 172.28.5.1
+
+  exporter-ecoadapt:
+    container_name: exporter-ecoadapt
+    build: ./src
+    restart: unless-stopped
+    command: python ./exporter-ecoadapt/websocket_client.py -mh 172.28.5.1 -mp 5020 --server 172.28.5.3
+    volumes:
+      - ./src/:/usr/src/
+    networks:
+      sensorfact:
+        ipv4_address: 172.28.5.2
+    depends_on:
+      - sensorfact-server
+      - modbus-server
+
+  sensorfact-server:
+    container_name: sensorfact-server
+    restart: unless-stopped
+    build: ./dev
+    ports:
+      - 9000:9000
+    command: python ./server.py --port 9000
+    networks:
+      sensorfact:
+        ipv4_address: 172.28.5.3
 
 networks:
-  default:
-    name: sensorfact
+  sensorfact:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.0.0/16
+          gateway: 172.28.5.254

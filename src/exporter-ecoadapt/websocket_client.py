@@ -111,7 +111,14 @@ if __name__ == '__main__':
 
     loop = asyncio.get_event_loop()
     coro = loop.create_connection(factory, args.server, args.port)
-    loop.run_until_complete(coro)
-    loop.run_forever()
-    loop.close()
+
+    try:
+        loop.run_until_complete(coro)
+        loop.run_forever()
+        loop.close()
+    except Exception as e:
+        log.error(f"Error occurred in {type(e).__name__}: {str(e)} - {args.server}:{args.port}")
+    finally:
+        loop.close()
+
     # -end
