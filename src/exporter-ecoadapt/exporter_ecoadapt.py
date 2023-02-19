@@ -22,6 +22,8 @@ def run_sync_client(host: str = "127.0.0.1", port: int = 502, unit: int = 0x1):
 
     # Setting up Modbus Client
     client = ModbusClient(host, port=port)
+    client.connect()
+    
     pe6_sensor = PowerElec6()
 
     read_general_information = [
@@ -59,8 +61,7 @@ def run_sync_client(host: str = "127.0.0.1", port: int = 502, unit: int = 0x1):
     # Sent data - WS
     log.info(f"Sending data to server: {registers_data}")
 
-    client.connect()
-    client.close()
+    # client.close()
 
     return registers_data
 

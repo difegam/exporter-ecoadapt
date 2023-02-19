@@ -1,8 +1,17 @@
+import argparse
 import asyncio
 import json
+import logging
 
 import exporter_ecoadapt
 from autobahn.asyncio.websocket import (WebSocketClientFactory, WebSocketClientProtocol)
+
+# configure the client logging
+FORMAT = ("%(asctime)-15s %(threadName)-15s "
+          "%(levelname)-8s %(module)-15s:%(lineno)-8s %(message)s")
+logging.basicConfig(format=FORMAT)
+log = logging.getLogger()
+log.setLevel(logging.INFO)
 
 
 class WsClientProtocol(WebSocketClientProtocol):
@@ -23,9 +32,13 @@ class WsClientProtocol(WebSocketClientProtocol):
 
         # start sending messages every second ..
         while True:
-            data = exporter_ecoadapt.run_sync_client(port=5020)
-            self.sendMessage(json.dumps(data).encode('utf-8'))
-            await asyncio.sleep(2)
+            try:
+                data = exporter_ecoadapt.run_sync_client(port=5020)
+                self.sendMessage(json.dumps(data).encode('utf-8'))
+                await asyncio.sleep(2)
+
+            except Exception as e:
+                log.error(f"Error occurred in {type(e).__name__}: {str(e)}")
 
     def onMessage(self, payload, isBinary):
         if isBinary:
@@ -38,14 +51,19 @@ class WsClientProtocol(WebSocketClientProtocol):
 
 
 if __name__ == '__main__':
-    factory = WebSocketClientFactory(u"ws://127.0.0.1:9000")
+    parser = argparse.ArgumentParser(description="A minimal WebSocket Client")
+    parser.add_argument("--server", help="server", type=str, default='127.0.0.1')
+    parser.add_argument("--port", "-p", help="port to serve (default 9000)", type=int, default=9000)
+
+    args = parser.parse_args()
+
+    factory = WebSocketClientFactory(f"ws://{args.server}:{args.port}")
     factory.protocol = WsClientProtocol
 
     loop = asyncio.get_event_loop()
-    coro = loop.create_connection(factory, '127.0.0.1', 9000)
+    coro = loop.create_connection(factory, args.server, args.port)
     loop.run_until_complete(coro)
     loop.run_forever()
     loop.close()
-    # -end    # -end    loop.run_forever()
-    loop.close()
-    # -end    # -end    # -end    # -end
+    # -end
+    # -end
