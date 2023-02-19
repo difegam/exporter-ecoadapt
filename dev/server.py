@@ -30,37 +30,47 @@
 
 import argparse
 import asyncio
+import logging
 
 from autobahn.asyncio.websocket import (WebSocketServerFactory, WebSocketServerProtocol)
+
+# configure the client logging
+FORMAT = ("%(asctime)-15s %(threadName)-15s "
+          "%(levelname)-8s %(module)-15s:%(lineno)-8s %(message)s")
+
+# configure the client logging
+logging.basicConfig(format=FORMAT)
+log = logging.getLogger()
+log.setLevel(logging.INFO)
 
 
 class MyServerProtocol(WebSocketServerProtocol):
 
     def onConnect(self, request):
-        print(request)
-        print("Client connecting: {0}".format(request.peer))
+
+        log.info("Client connecting: {0}".format(request.peer))
 
         if "WsClientProtocol" in request.protocols:
             self.factory.protocol = 'WsClientProtocol'
-            print("Subprotocol selected: {}".format(self.factory.protocol))
+            log.info("Subprotocol selected: {}".format(self.factory.protocol))
             return
         else:
             # self.sendClose(404, "No matching protocol")
             return
 
     async def onOpen(self):
-        print("WebSocket connection open.")
+        log.info("WebSocket connection open.")
 
     def onMessage(self, payload, isBinary):
         if isBinary:
-            print("Binary message received: {0} bytes".format(len(payload)))
+            log.info("Binary message received: {0} bytes".format(len(payload)))
         else:
-            print("Text message received: {0}".format(payload.decode("utf8")))
+            log.info("Text message received: {0}".format(payload.decode("utf8")))
 
         self.sendMessage(payload, isBinary)
 
     def onClose(self, wasClean, code, reason):
-        print("WebSocket connection closed: {0}".format(reason))
+        log.info("WebSocket connection closed: {0}".format(reason))
 
 
 if __name__ == "__main__":
@@ -69,7 +79,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
     server_url = f"ws://127.0.0.1:{args.port}"
-    print(f"Starting server on {server_url}")
+    log.info(f"Starting server on {server_url}")
     factory = WebSocketServerFactory(server_url)
     factory.protocol = MyServerProtocol
 
@@ -80,7 +90,7 @@ if __name__ == "__main__":
     try:
         loop.run_forever()
     except KeyboardInterrupt:
-        print("Interrupted! Closing server.")
+        log.warn("Interrupted! Closing server.")
     finally:
         server.close()
         loop.close()

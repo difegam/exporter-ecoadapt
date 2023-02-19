@@ -3,15 +3,16 @@
 version: "3.9"
 
 services:
-  # exporter-ecoadapt:
-  #   container_name: exporter-ecoadapt
-  #   build: ./src
-  #   restart: unless-stopped
-  #   command: python ./exporter-ecoadapt/exporter-ecoadapt.py
-  #   ports:
-  #     - 502:502
-  #   volumes:
-  #     - ./src/:/usr/src/
+  exporter-ecoadapt:
+    container_name: exporter-ecoadapt
+    build: ./src
+    restart: unless-stopped
+    command: python ./exporter-ecoadapt/websocket_client.py --mp 5020
+    ports:
+      - 5020:5020
+      - 502:502
+    volumes:
+      - ./src/:/usr/src/
 
   sensorfact-server:
     container_name: sensorfact-server
@@ -34,4 +35,3 @@ services:
 networks:
   default:
     name: sensorfact
-    # external: true
