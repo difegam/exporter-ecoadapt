@@ -1,11 +1,9 @@
+import struct
 from enum import Enum
 from functools import lru_cache
+from typing import List
 
-from power_elec_6_settings import (
-    PE6_CONFIGURATION,
-    PE6_GENERAL_INFORMATION,
-    PE6_MEASUREMENTS_DEFINITION,
-)
+from power_elec_6_settings import (PE6_CONFIGURATION, PE6_GENERAL_INFORMATION, PE6_MEASUREMENTS_DEFINITION)
 from pydantic import BaseModel, Field, NonNegativeInt, PositiveInt
 
 
@@ -22,16 +20,6 @@ class InvalidConnectorsException(Exception):
 class InvalidChannelsException(Exception):
     "Raised when Measurement does not exist."
     pass
-
-
-def bytes_(value):
-    _num = 0
-    if isinstance(value, str):
-        _num = int(value, 16)
-    else:
-        _num = value
-
-    return divmod(_num, 0x100)
 
 
 class GeneralInfo(BaseModel):
@@ -122,10 +110,28 @@ class PowerElec6():
         self.frequency = Measurement(**_get_definition('frequency', PE6_MEASUREMENTS_DEFINITION))
 
     def get_registers_range(self, measurement: str):
-        if  measurement not in self.__dict__:
+        if measurement not in self.__dict__:
             return []
         return [(self.__dict__[measurement]._register_number(connector=1, channel=1), 12)]
 
+    def _get_big_endian_measurements(self, measurements: List[int], wpc: int):
+        return (tuple(measurements[i:i + wpc]) for i in range(0, len(measurements), wpc))
+
+    def _hex2float(self, measurements):
+
+        if not all(measurements):
+            return 0
+
+        hex_values = [hex(value)[2:] for value in list(measurements)[::-1]]
+        hex_values_as_str = ''.join(hex_values)
+
+        return struct.unpack('!f', bytes.fromhex(hex_values_as_str))[0]
+
+    def get_float_value(self, measurements: List[int], wpc: int, precision=3):
+        measurements_tuples = self._get_big_endian_measurements(measurements, wpc)
+        return [round(self._hex2float(measurements_values), precision) for measurements_values in measurements_tuples]
+
 
 if __name__ == "__main__":
-  pass
+    pass
+# w

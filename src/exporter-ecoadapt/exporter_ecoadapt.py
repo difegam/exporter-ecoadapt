@@ -36,22 +36,28 @@ def run_sync_client(modbus_client: ModbusClient, tcp_modbus_sensor: PowerElec6, 
 
     # Get registers data - frequency
     read_frequency = tcp_modbus_sensor.get_registers_range('frequency')
+    frequency_wpc = tcp_modbus_sensor.frequency.wpc
+    frequency_measurements = get_registers_values(modbus_client, read_frequency)[0]
     registers_data['frequency'] = {
-        'values': get_registers_values(modbus_client, read_frequency),
+        'values': tcp_modbus_sensor.get_float_value(frequency_measurements, frequency_wpc),
         'unit': tcp_modbus_sensor.frequency.unit
     }
 
     # Get registers data - voltage
     read_voltage = tcp_modbus_sensor.get_registers_range('rms_voltage')
+    rms_voltage_wpc = tcp_modbus_sensor.rms_voltage.wpc
+    rms_voltage_measurements = get_registers_values(modbus_client, read_voltage)[0]
     registers_data['rms_voltage'] = {
-        'values': get_registers_values(modbus_client, read_voltage),
+        'values': tcp_modbus_sensor.get_float_value(rms_voltage_measurements, rms_voltage_wpc),
         'unit': tcp_modbus_sensor.rms_voltage.unit
     }
 
     # Get registers data - voltage_average
     read_voltage_average = tcp_modbus_sensor.get_registers_range('rms_voltage_1_min_average')
+    rms_voltage_avg_wpc = tcp_modbus_sensor.rms_voltage_1_min_average.wpc
+    rms_voltage_avg_measurements = get_registers_values(modbus_client, read_voltage_average)[0]
     registers_data['rms_voltage_1_min_average'] = {
-        'values': get_registers_values(modbus_client, read_voltage_average),
+        'values': tcp_modbus_sensor.get_float_value(rms_voltage_avg_measurements, rms_voltage_avg_wpc),
         'unit': tcp_modbus_sensor.rms_voltage_1_min_average.unit
     }
 
